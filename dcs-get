@@ -74,15 +74,117 @@ function install_package($package, $version) {
 		echo 'Downloading '.$package.'-'.$version."\n";
 
 		// Install
-		shell_exec('curl -# '.BASE_URL.'packages/'.$package.'-'.$version.'.tar.gz | tee '.INSTALL_DIR.'/downloads/'.$package.'-'.$version.'.tar.gz | tar xz -C '.INSTALL_DIR);
+		$dl=new downloader($package, $version);
+		$dl=NULL;
 		shell_exec('mv '.INSTALL_DIR.'/downloads/'.$package.'-'.$version.'.tar.gz '.INSTALL_DIR.'/downloaded/'.$package.'-'.$version.'.tar.gz');
-
 	}
 
 	echo 'Installed '.$package.'-'.$version."\n";
 	return true;
 }
 
+class downloader
+{
+	private $tar;
+	private $curl;
+	private $out;
+	private $downloaded;
+	private $total_size;
+	private $start_time;
+
+	function __construct($package, $version)
+	{
+		$this->start_time = time();
+		$this->downloaded = 0;
+		$this->total_size = 0;
+		$this->tar = popen('tar xz -C '.INSTALL_DIR, 'w');
+		$this->out = fopen(INSTALL_DIR.'/downloads/'.$package.'-'.$version.'.tar.gz', 'a+b');
+		$this->curl = curl_init();
+		curl_setopt($this->curl, CURLOPT_HEADER, 0);
+		curl_setopt($this->curl, CURLOPT_URL, BASE_URL.'packages/'.$package.'-'.$version.'.tar.gz');
+		//This doesn't work with older versions of php such as the one in DCS so we have a workaround
+		//curl_setopt($this->curl, CURLOPT_PROGRESSFUNCTION, array($this, 'progress_callback'));
+		curl_setopt($this->curl, CURLOPT_HEADERFUNCTION, array($this, 'header_callback'));
+		curl_setopt($this->curl, CURLOPT_WRITEFUNCTION, array($this, 'write_callback'));
+		curl_exec($this->curl);
+	}
+
+	function __destruct()
+	{
+		curl_close($this->curl);
+		if(curl_error($this->curl))
+		{
+			echo("Error is: ".curl_error($this->curl));
+		}
+		pclose($this->tar);
+		fclose($this->out);
+	}
+
+	//This doesn't work with older versions of php such as the one installed in DCS
+	function progress_callback($download_size, $downloaded, $upload_size, $uploaded)
+	{
+		echo("Downloaded: $downloaded/$download_size");
+		flush();
+		return 0;
+	}
+
+	function write_callback($ch, $string)
+	{
+		$length = strlen($string);
+		$this->downloaded += $length;
+		$this->progress_bar();
+		fwrite($this->tar, $string, $length);
+		fwrite($this->out, $string, $length);
+		return $length;
+	}
+
+	function header_callback($ch, $string)
+	{
+		$length = strlen($string);
+		if(preg_match('/Content-Length: (?P<size>\d+)/', $string, $matches))
+		{
+			$this->total_size = $matches[size];
+		}
+		return $length;
+	}
+
+	//jizzy progress bar
+	function progress_bar()
+	{
+		$size = 30;
+		$now = time();
+		$percentage = (double)($this->downloaded/$this->total_size);
+		$bar_filled = floor($percentage*$size);
+		$status_bar = "\r[";
+		$status_bar .= str_repeat("=", $bar_filled);
+		if($bar_filled < $size)
+		{
+			$status_bar .= ">";
+			$status_bar .= str_repeat(" ", $size-$bar_filled);
+		}
+		else
+		{
+			$status_bar .= "=";
+		}
+		$display = number_format($percentage * 100, 0);
+		$status_bar .= "] $display% $this->downloaded/$this->total_size";
+
+		$rate = ($now - $this->start_time)/$this->downloaded;
+		$left = $this->total_size - $this->downloaded;
+		$eta = round($rate * $left);
+
+		$elapsed = $now - $this->start_time;
+
+		$status_bar .= " remaining: ".number_format($eta)." sec.  elapsed: ".number_format($elapsed)." sec.";
+
+		echo($status_bar);
+		flush();
+		if($this->downloaded == $this->total_size)
+		{
+			echo("\n");
+		}
+	}
+}
 
 $input = $argv;
 
