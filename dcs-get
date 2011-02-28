@@ -169,14 +169,6 @@ class downloader
 		$display = number_format($percentage * 100, 0);
 		$status_bar .= "] $display% $this->downloaded/$this->total_size";
 
-		$rate = ($now - $this->start_time)/$this->downloaded;
-		$left = $this->total_size - $this->downloaded;
-		$eta = round($rate * $left);
-
-		$elapsed = $now - $this->start_time;
-
-		$status_bar .= " remaining: ".number_format($eta)." sec.  elapsed: ".number_format($elapsed)." sec.";
-
 		echo($status_bar);
 		flush();
 		if($this->downloaded == $this->total_size)
