@@ -37,5 +37,6 @@ then
 	# Get dcs-get
 	cd bin
 	wget -q http://backus.uwcs.co.uk/dcs-get/dcs-get
+	wget -q http://backus.uwcs.co.uk/packages.json
 	chmod u+x dcs-get
 fi

@@ -11,7 +11,7 @@ define('BASE_URL', 'http://backus.uwcs.co.uk/dcs-get/');
 
 $json = new Services_JSON();
 
-$packages = $json->decode(file_get_contents('http://backus.uwcs.co.uk/dcs-get/packages.json'));
+$packages = $json->decode(file_get_contents('/var/tmp/dcs-get/packages.json'));
 
 function symlink_dir($from, $to) {
 	$dh = opendir($to);
@@ -195,7 +195,7 @@ if (!isset($input[1])) {
 
 switch ($input[1]) {
 	case 'commands':
-		echo "commands search install reinstall list list-dev clean gensymlinks package help upload";
+		echo "commands search install reinstall list list-dev clean gensymlinks package help upload update";
 	break;
 	case 'search':
 	case 's':
@@ -357,13 +357,11 @@ switch ($input[1]) {
 		break;
 	case 'upload':
 	case 'u':
-		//MAGIC GOES HERE
 		if (file_exists(INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz')) {
 			$file = '@'.INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz';
 			$fields = array('upload'=>'true', 'foo'=>$file);
 			echo 'Uploading: '.$file."\n"; 
 			
-			//AND HERE
 			$ch = curl_init(BASE_URL.'uploader.php');
 			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: MultiPart/Form-Data'));
@@ -375,6 +373,10 @@ switch ($input[1]) {
 		} else {
 			echo $input[2].' does not exist.'."\n";
 		}
+		break;
+	case 'update':
+		shell_exec('wget -q http://backus.uwcs.co.uk/dcs-get/packages.json');
+		shell_exec('mv packages.json '.INSTALL_DIR);
 		break;
 	case 'help':
 	default:
