@@ -8,17 +8,19 @@ then
         if [[ ! -d /var/tmp/dcs-get || ! -O /var/tmp/dcs-get ]]
         then
                 cd /var/tmp
-		wget -q -T 1 -t 2 http://backus.uwcs.co.uk/dcs-get/dcs-get-install
-                if [[ -e /var/tmp/dcs-get-install ]]; then
-                	chmod u+x dcs-get-install
-			./dcs-get-install "1.0"
+		INSTALL=$(mktemp -p /var/tmp/ dcs-get-install.XXXXXXXXXX) || { echo "Failed to install dcs-get"; exit 1; }
+		wget -O $INSTALL -q -T 1 -t 2 http://backus.uwcs.co.uk/dcs-get/dcs-get-install
+                if [ $? -ne 0 ]
+		then
+                	chmod u+x $INSTALL
+			$INSTALL "1.1"
 			if [ $? -ne 0 ]
 			then
-				rm dcs-get-install
+				rm $INSTALL
 				cd
 				return 1
 			fi
-			rm dcs-get-install
+			rm $INSTALL
 		else
 			echo "Backus is down, dcs-get is currently unavailiable."
 		fi
