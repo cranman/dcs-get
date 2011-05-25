@@ -26,7 +26,7 @@ then
 	mkdir /var/tmp/dcs-get
 	chmod a+rX /var/tmp/dcs-get
 	cd /var/tmp/dcs-get
-	wget -q http://backus.uwcs.co.uk/packages.json
+	wget -nc -q http://backus.uwcs.co.uk/dcs-get/packages.json
 	mkdir bin
 	mkdir lib
 	mkdir downloads
