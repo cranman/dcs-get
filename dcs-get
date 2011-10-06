@@ -316,15 +316,20 @@ switch ($input[1]) {
 			$version = substr($input[2],strrpos($input[2],'-')+1);
 			// TODO: man, anything else?
 			// bin
-			$dh = opendir(INSTALL_DIR.'/'.$input[2].'/bin');
-			while (false !== ($filename = readdir($dh))) {
+			if (is_dir(INSTALL_DIR.'/'.$input[2].'/bin/')) {
+			    $dh = opendir(INSTALL_DIR.'/'.$input[2].'/bin');
+			    while (false !== ($filename = readdir($dh))) {
 				if (substr($filename,0,1) !== '.' && is_file(INSTALL_DIR.'/'.$input[2].'/bin/'.$filename)) {
-					shell_exec('ln -s '.INSTALL_DIR.'/'.$input[2].'/bin/'.$filename.' '.INSTALL_DIR.'/bin/'.$filename);
-					shell_exec('ln -s '.INSTALL_DIR.'/'.$input[2].'/bin/'.$filename.' '.INSTALL_DIR.'/bin/'.$filename.'-'.$version);
+				    shell_exec('ln -s '.INSTALL_DIR.'/'.$input[2].'/bin/'.$filename.' '.INSTALL_DIR.'/bin/'.$filename);
+				    shell_exec('ln -s '.INSTALL_DIR.'/'.$input[2].'/bin/'.$filename.' '.INSTALL_DIR.'/bin/'.$filename.'-'.$version);
 				}
+			    }
 			}
+			
 			// lib
-			symlink_dir(INSTALL_DIR.'/lib/', INSTALL_DIR.'/'.$input[2].'/lib/');
+			if (is_dir(INSTALL_DIR.'/'.$input[2].'/lib/')) {
+			    symlink_dir(INSTALL_DIR.'/lib/', INSTALL_DIR.'/'.$input[2].'/lib/');
+			}
 			echo 'Symlinks for '.$input[2].' generated'."\n";
 		} else {
 			echo $input[2].' does not exist'."\n";
