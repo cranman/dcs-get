@@ -375,7 +375,7 @@ switch ($input[1]) {
 		}
 		break;
 	case 'update':
-		shell_exec('wget -q http://backus.uwcs.co.uk/dcs-get/packages.json');
+		shell_exec('wget -q http://backus.uwcs.co.uk/dcs-get/packages.json -O packages.json');
 		shell_exec('mv packages.json '.INSTALL_DIR);
 		break;
 	case 'help':
