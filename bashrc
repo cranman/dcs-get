@@ -28,8 +28,8 @@ then
         fi
 	if [[ -d /var/tmp/dcs-get && -O /var/tmp/dcs-get ]]
 	then
-        	export LD_LIBRARY_PATH=/var/tmp/dcs-get/lib
-		export PKG_CONFIG_PATH=/var/tmp/dcs-get/lib/pkgconfig
+        	export LD_LIBRARY_PATH=/var/tmp/dcs-get/lib:/var/tmp/dcs-get/lib64
+		export PKG_CONFIG_PATH=/var/tmp/dcs-get/lib/pkgconfig:/var/tmp/dcs-get/lib64/pkgconfig
         	export PATH=/var/tmp/dcs-get/bin:$PATH
 #####################
 # Add dcs-get install (package)-(version)
