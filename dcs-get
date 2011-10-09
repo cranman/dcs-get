@@ -374,7 +374,12 @@ switch ($input[1]) {
 			}
 			
 			chdir(INSTALL_DIR);
-			shell_exec('tar czf '.INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz '.implode(' ',$files));
+			
+			//write full tar command to file to get around shell_exec command length bug
+			file_put_contents($input[2].'.sh', "#!/bin/sh\n".'tar czf '.INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz '.implode(' ',$files));
+			chmod($input[2].'.sh', 0700);
+			shell_exec(INSTALL_DIR.'/'.$input[2].'.sh');
+			unlink($input[2].'.sh');
 			
 			if (file_exists(INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz')) {
 			    echo INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz created!'."\n";
