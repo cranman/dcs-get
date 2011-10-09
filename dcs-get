@@ -330,6 +330,16 @@ switch ($input[1]) {
 			if (is_dir(INSTALL_DIR.'/'.$input[2].'/lib/')) {
 			    symlink_dir(INSTALL_DIR.'/lib/', INSTALL_DIR.'/'.$input[2].'/lib/');
 			}
+			
+			//lib64
+			if (is_dir(INSTALL_DIR.'/'.$input[2].'/lib64/')) {
+			    symlink_dir(INSTALL_DIR.'/lib64/', INSTALL_DIR.'/'.$input[2].'/lib64/');
+			}
+			
+			//include
+			if (is_dir(INSTALL_DIR.'/'.$input[2].'/include/')) {
+			    symlink_dir(INSTALL_DIR.'/include/', INSTALL_DIR.'/'.$input[2].'/include/');
+			}
 			echo 'Symlinks for '.$input[2].' generated'."\n";
 		} else {
 			echo $input[2].' does not exist'."\n";
@@ -353,6 +363,13 @@ switch ($input[1]) {
                         }
                         // lib
 			$files = array_merge($files, getsymsto('lib/', $input[2].'/lib/'));
+			
+			//lib64
+			$files = array_merge($files, getsymsto('lib64/', $input[2].'/lib64/'));
+			
+			//include
+			$files = array_merge($files, getsymsto('include/', $input[2].'/include/'));
+			
 			chdir(INSTALL_DIR);
 			shell_exec('tar czf '.INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz '.implode(' ',$files));
 			echo INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz created!'."\n";
