@@ -152,7 +152,7 @@ class downloader
 	function progress_bar()
 	{
 		$size = 30;
-		http://springrts.com/phpbb/viewtopic.php?f=20&t=26080$now = time();
+		now = time();
 		$percentage = (double)($this->downloaded/$this->total_size);
 		$bar_filled = floor($percentage*$size);
 		$status_bar = "\r[";
