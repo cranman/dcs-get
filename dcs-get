@@ -152,7 +152,7 @@ class downloader
 	function progress_bar()
 	{
 		$size = 30;
-		$now = time();
+		http://springrts.com/phpbb/viewtopic.php?f=20&t=26080$now = time();
 		$percentage = (double)($this->downloaded/$this->total_size);
 		$bar_filled = floor($percentage*$size);
 		$status_bar = "\r[";
@@ -365,14 +365,22 @@ switch ($input[1]) {
 			$files = array_merge($files, getsymsto('lib/', $input[2].'/lib/'));
 			
 			//lib64
-			$files = array_merge($files, getsymsto('lib64/', $input[2].'/lib64/'));
-			
+			if (is_dir(INSTALL_DIR.'/'.$input[2].'/lib64/')) {
+			    $files = array_merge($files, getsymsto('lib64/', $input[2].'/lib64/'));
+			}
 			//include
-			$files = array_merge($files, getsymsto('include/', $input[2].'/include/'));
+			if (is_dir(INSTALL_DIR.'/'.$input[2].'/include/')) {
+			    $files = array_merge($files, getsymsto('include/', $input[2].'/include/'));
+			}
 			
 			chdir(INSTALL_DIR);
 			shell_exec('tar czf '.INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz '.implode(' ',$files));
-			echo INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz created!'."\n";
+			
+			if (file_exists(INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz')) {
+			    echo INSTALL_DIR.'/downloaded/'.$input[2].'.tar.gz created!'."\n";
+			} else {
+			    echo 'Packaging unsuccessful';
+			}
 		} else {
                         echo $input[2].' does not exist'."\n";
                 }
