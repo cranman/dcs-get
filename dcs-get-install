@@ -29,6 +29,8 @@ then
 	wget -nc -q http://backus.uwcs.co.uk/dcs-get/packages.json
 	mkdir bin
 	mkdir lib
+	mkdir include
+	mkdir lib64
 	mkdir downloads
 	mkdir downloaded
 	touch cleanup
