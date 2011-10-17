@@ -33,6 +33,7 @@ then
 	mkdir lib64
 	mkdir downloads
 	mkdir downloaded
+	mkdir home
 	touch cleanup
 	echo -e "#!/usr/bin/perl\nuse File::Path 'rmtree';\nrmtree([ '/var/tmp/dcs-get' ]);" > cleanup
 	chmod a+rx cleanup
